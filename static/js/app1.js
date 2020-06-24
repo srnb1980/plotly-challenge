@@ -1,5 +1,8 @@
+// Defining the URL
 const url = "samples.json";
 
+
+// Reading D3
 d3.json(url).then(function(data)
 {
     console.log(data);
@@ -9,16 +12,8 @@ d3.json(url).then(function(data)
     console.log(names);
     var samples = data.samples;
     console.log(samples);
-    var sample1 = data.samples[0];
-    console.log(sample1);
-    var id = sample1.id;
-    console.log(id);
-    var otu_ids= sample1.otu_ids;
-    console.log(otu_ids);
-    var values= sample1.sample_values;
-    console.log(values);
 
-    // populate dropdownbar
+// populate dropdownbar
 
     var ddMenu = d3.select("#selDataset");
     ddMenu.on("change",updateAll);
@@ -41,25 +36,27 @@ d3.json(url).then(function(data)
         }
         console.log(selectID);
 
+// calling the demographics, bargraph and bubble graph
         DemoInfo(selectID,metadata);
         bargraph(selectID,samples);
         bubblegraph(selectID,samples);
     }
 
+// Function for demographic info
     function DemoInfo(selectID,metadata) {
         var demo = d3.select("#sample-metadata");
         demo.html("");
         var meta=demo.append("ul").classed("list-group", true);
         metadata.forEach(item => {
             if(item.id == parseInt(selectID)){
-                Object.entries(item).forEach( KeyVa => {
-                    var listItem=meta.append("li").classed("list-group-item",true).text(`${KeyVa[0]}:${KeyVa[1]}`);
+                Object.entries(item).forEach( KV => {
+                    meta.append("li").classed("list-group-item",true).text(`${KV[0]}:${KV[1]}`);
                 });
             }
         });
     }
 
-
+// Function for bar graph
     function bargraph(selectID,samples) {
 
           // Sort the data by search results
@@ -115,7 +112,9 @@ d3.json(url).then(function(data)
 
 // Apply the group bar mode to the layout
     var layout = {
-    title: "Top 10 OTUs in the Individual ",
+    title: "Top 10 OTUs in the Individual - Horizontal Bar Chart",
+    xaxis: { title: 'Sample Values'},
+    yaxis: { title: 'OTU IDs'},
     margin: {
         l: 100,
         r: 100,
@@ -128,6 +127,7 @@ d3.json(url).then(function(data)
     Plotly.newPlot("bar", data, layout);
  }
 
+ // Function for bubble graph
  function bubblegraph(selectID,samples) {
 
     var sample1=[];
@@ -136,6 +136,8 @@ d3.json(url).then(function(data)
             sample1 = sample;
         }
     });
+
+// Defining the trace for bubble graph
 
     var trace1 = {
         x: sample1.otu_ids,
@@ -149,14 +151,19 @@ d3.json(url).then(function(data)
       };
       
       var bubble_data = [trace1];
-      
+
+// Defining the layout for bubble graph
+
       var bubble_layout = {
-        title: 'OTU IDs and Values',
+        title: 'OTU IDs vs Sample Values - Bubble Graph',
+        xaxis: { title: 'OTU IDs'},
+        yaxis: { title: 'Sample Values'},
         showlegend: false,
         height: 600,
         width: 1200
       };
-      
+
+// Render the plot to the bubble tag
       Plotly.newPlot('bubble', bubble_data, bubble_layout);
 
   }
